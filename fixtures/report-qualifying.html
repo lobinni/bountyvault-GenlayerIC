@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Report: stored XSS in the Acme Router web panel (firmware 2.4)</title>
+  </head>
+  <body>
+    <h1>Stored XSS in the Acme Router web panel, firmware 2.4</h1>
+    <p>
+      In scope: the router web panel, firmware 2.4. This report demonstrates a reproducible
+      security issue with steps to reproduce and its impact.
+    </p>
+    <h2>Affected version</h2>
+    <p>Firmware 2.4, web panel build 2.4.117, reproduced on two factory-reset devices.</p>
+    <h2>Steps to reproduce</h2>
+    <ol>
+      <li>Open the panel, sign in, go to Settings &gt; Device name.</li>
+      <li>Save the payload <code>&lt;script&gt;fetch('/session').then(...)&lt;/script&gt;</code>.</li>
+      <li>Open Status &gt; Overview. The script runs in the session of any viewer.</li>
+    </ol>
+    <h2>Impact</h2>
+    <p>
+      Session theft of any administrator viewing the overview page; full configuration
+      control follows. Demonstrated end to end on a local device.
+    </p>
+  </body>
+</html>

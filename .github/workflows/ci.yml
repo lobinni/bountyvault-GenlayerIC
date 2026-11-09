@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m pip install -r requirements-dev.txt
+      - name: Format check
+        run: black --check contracts tests samples scripts
+      - name: Lint
+        run: flake8 contracts tests samples scripts --max-line-length=100 --ignore=E501,W503,E203,E402,F403,F405
+      - name: GenVM lint (the check stewards run)
+        run: |
+          python3 -m pip install genvm-linter
+          sh scripts/lint.sh
+      - name: Tests
+        run: python3 -m pytest -q
+      - name: Schema dry-run on Studio Next (the exact call the deploy dialog makes)
+        run: python3 scripts/check_schema.py
+      - name: Deployed code equals this source
+        env:
+          CONTRACT_ADDRESS: ${{ vars.CONTRACT_ADDRESS }}
+        run: python3 scripts/verify_deployment.py
